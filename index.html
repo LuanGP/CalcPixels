@@ -169,7 +169,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.0.4</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.0.5</span></h1>
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label>Gabinete:</label>
@@ -376,7 +376,7 @@
                 (larguraRealM && alturaRealM ? `Dimensão real em metros: <b>${larguraRealM}m x ${alturaRealM}m</b><br>` : '') +
                 `Quantidade de gabinetes: <b>${qtdLarg * qtdAlt} (${qtdLarg}x${qtdAlt})</b><br>` +
                 `Pixels totais do projeto: <b>${totalPixels.toLocaleString('pt-BR')}</b><br>` +
-                `Quantidade de portas necessárias da processadora: <b>${portasNecessarias}</b>`;
+                `Portas na processadora: <b>${portasNecessarias}</b>`;
         }
     </script>
 </body>
