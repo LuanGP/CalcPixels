@@ -218,7 +218,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.3.0</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.4.0</span></h1>
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label>Gabinete:</label>
@@ -315,6 +315,28 @@
                    window.location.hostname === '127.0.0.1';
         }
         
+        // Função para fazer requisição direta à API (fallback)
+        async function directAPIRequest() {
+            try {
+                const response = await fetch(`https://api.counterapi.dev/v2/${COUNTER_CONFIG.workspace}/calcpixels-visits/up`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${COUNTER_CONFIG.accessToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                return data;
+            } catch (error) {
+                throw error;
+            }
+        }
+        
         // Função para inicializar o contador
         async function initializeCounter() {
             try {
@@ -332,11 +354,30 @@
                     return;
                 }
                 
-                // Criar cliente CounterAPI com suas credenciais
-                counterClient = new Counter(COUNTER_CONFIG);
+                // Mostrar status de carregamento
+                document.getElementById('counter-display').textContent = 'Conectando...';
                 
-                // Incrementar contador de visitas
-                const counter = await counterClient.up('calcpixels-visits');
+                let counter;
+                
+                try {
+                    // Primeira tentativa: usar biblioteca oficial
+                    counterClient = new Counter(COUNTER_CONFIG);
+                    
+                    // Tentar incrementar contador com timeout
+                    const counterPromise = counterClient.up('calcpixels-visits');
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Timeout')), 8000)
+                    );
+                    
+                    counter = await Promise.race([counterPromise, timeoutPromise]);
+                    
+                } catch (libraryError) {
+                    console.log('Biblioteca falhou, tentando requisição direta...');
+                    
+                    // Segunda tentativa: requisição direta
+                    const data = await directAPIRequest();
+                    counter = { value: data.data.up_count + data.data.down_count };
+                }
                 
                 // Atualizar display
                 updateCounterDisplay(counter);
@@ -347,14 +388,33 @@
             } catch (error) {
                 console.error('Erro ao inicializar contador:', error);
                 
-                // Se for erro de CORS ou rede, mostrar mensagem específica
-                if (error.message && error.message.includes('CORS') || 
-                    error.code === 'ERR_NETWORK') {
-                    document.getElementById('counter-display').textContent = 'Contador disponível no GitHub Pages';
-                } else {
-                    document.getElementById('counter-display').textContent = 'Erro ao carregar contador';
+                let errorMessage = 'Erro ao carregar contador';
+                
+                // Detectar tipo específico de erro
+                if (error.message && error.message.includes('CORS')) {
+                    errorMessage = 'Contador disponível no GitHub Pages';
+                } else if (error.code === 'ERR_NETWORK' || error.message === 'Network Error') {
+                    errorMessage = 'Erro de conexão - verifique sua internet';
+                } else if (error.message && error.message.includes('BLOCKED_BY_CLIENT')) {
+                    errorMessage = 'Contador bloqueado por extensão do navegador';
+                } else if (error.message === 'Timeout') {
+                    errorMessage = 'Timeout na conexão com a API';
+                } else if (error.status === 404) {
+                    errorMessage = 'Workspace não encontrado';
+                } else if (error.status === 401) {
+                    errorMessage = 'Token de acesso inválido';
                 }
+                
+                document.getElementById('counter-display').textContent = errorMessage;
                 document.getElementById('counter-stats').style.display = 'none';
+                
+                // Adicionar dica para desabilitar ad-blocker
+                if (error.message && error.message.includes('BLOCKED_BY_CLIENT')) {
+                    const tipElement = document.createElement('div');
+                    tipElement.style.cssText = 'font-size: 0.8em; color: #666; margin-top: 8px;';
+                    tipElement.textContent = 'Dica: Desabilite ad-blockers para este site';
+                    document.querySelector('.counter-section').appendChild(tipElement);
+                }
             }
         }
         
