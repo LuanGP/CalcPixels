@@ -6,8 +6,8 @@
     <title>Calculadora de Painel de LED</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #f5f5f5;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #e9eafc 0%, #f5f7fa 100%);
             margin: 0;
             padding: 0;
             display: flex;
@@ -16,45 +16,99 @@
             min-height: 100vh;
         }
         h1 {
-            color: #d00;
+            color: #1a237e;
             margin-top: 40px;
+            font-size: 2.4em;
+            letter-spacing: 2px;
         }
         .container {
             background: #fff;
-            padding: 30px 40px;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 36px 44px 32px 44px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(26,35,126,0.10), 0 1.5px 6px rgba(26,35,126,0.07);
             margin-top: 30px;
-            min-width: 320px;
+            min-width: 340px;
+            max-width: 420px;
+            width: 100%;
         }
         label {
             display: block;
             margin-top: 18px;
-            font-weight: bold;
+            font-weight: 500;
+            color: #26326a;
+            font-size: 1.08em;
         }
-        input[type="number"] {
+        input[type="number"], select {
             width: 100%;
-            padding: 8px;
+            padding: 10px 12px;
             margin-top: 6px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            border: 1.5px solid #bfc6e0;
+            border-radius: 7px;
             font-size: 1em;
+            background: #f7f8fc;
+            transition: border 0.2s, box-shadow 0.2s;
+        }
+        input[type="number"]:focus, select:focus {
+            border: 1.5px solid #1a237e;
+            outline: none;
+            box-shadow: 0 0 0 2px #e3e6fa;
         }
         button {
-            margin-top: 24px;
-            padding: 10px 24px;
-            background: #003366;
+            margin-top: 28px;
+            padding: 12px 0;
+            background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%);
             color: #fff;
             border: none;
-            border-radius: 4px;
-            font-size: 1.1em;
+            border-radius: 7px;
+            font-size: 1.15em;
+            font-weight: 600;
             cursor: pointer;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(26,35,126,0.08);
+            transition: background 0.2s, box-shadow 0.2s;
         }
-        #resultado {
-            margin-top: 28px;
-            font-size: 1.2em;
-            color: #003366;
-            font-weight: bold;
+        button:hover {
+            background: linear-gradient(90deg, #3949ab 60%, #1a237e 100%);
+            box-shadow: 0 4px 16px rgba(26,35,126,0.13);
+        }
+        .result-box {
+            margin-top: 32px;
+            background: #f7f8fc;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(26,35,126,0.07);
+            padding: 24px 20px 18px 20px;
+            color: #1a237e;
+            font-size: 1.18em;
+            font-weight: 500;
+            letter-spacing: 0.2px;
+        }
+        .result-box b {
+            color: #26326a;
+            font-weight: 700;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 18px 4vw 18px 4vw;
+                min-width: unset;
+                max-width: 98vw;
+            }
+            .result-box {
+                padding: 14px 4vw 12px 4vw;
+                font-size: 1em;
+            }
+        }
+        /* Alinhar label e select na mesma linha para 'Quantidade de:' */
+        .inline-label-select {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 18px;
+        }
+        .inline-label-select label {
+            margin: 0;
+            font-weight: 500;
+            color: #26326a;
+            font-size: 1.08em;
         }
     </style>
 </head>
@@ -95,9 +149,9 @@
                 <input type="number" id="pixels-largura" placeholder="Largura (px)" min="1">
                 <input type="number" id="pixels-altura" placeholder="Altura (px)" min="1">
             </div>
-            <div style="display: flex; align-items: center; gap: 8px; margin-top: 18px;">
-                <label for="tipo-quantidade" style="margin: 0; font-weight: bold;">Quantidade de:</label>
-                <select id="tipo-quantidade" onchange="toggleTipoQuantidade()" required style="margin: 0;">
+            <div class="inline-label-select">
+                <label for="tipo-quantidade">Quantidade de:</label>
+                <select id="tipo-quantidade" onchange="toggleTipoQuantidade()" required>
                     <option value="gabinetes">Gabinetes:</option>
                     <option value="metros">Metros:</option>
                 </select>
@@ -114,7 +168,7 @@
             </div>
             <button type="submit" onclick="calcularPainel()">Calcular</button>
         </form>
-        <div id="resultado"></div>
+        <div id="resultado" class="result-box"></div>
     </div>
     <script>
         // Tabela universal de gabinetes
