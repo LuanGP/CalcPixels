@@ -86,6 +86,16 @@
             color: #26326a;
             font-weight: 700;
         }
+        .input-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+        .input-row input[type="number"] {
+            width: 48%;
+            min-width: 0;
+            display: inline-block;
+        }
         @media (max-width: 600px) {
             body {
                 padding: 0;
@@ -133,6 +143,14 @@
                 gap: 1px;
                 margin-top: 7px;
             }
+            .input-row {
+                gap: 6px;
+            }
+            .input-row input[type="number"] {
+                width: 45%;
+                font-size: 0.93em;
+                padding: 6px 6px;
+            }
         }
         /* Alinhar label e select na mesma linha para 'Quantidade de:' */
         .inline-label-select {
@@ -150,7 +168,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.0.2</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.0.3</span></h1>
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label>Gabinete:</label>
@@ -195,13 +213,17 @@
             </div>
             <div id="qtd-gabinetes">
                 <label>Quantidade de gabinetes:</label>
-                <input type="number" id="qtd-largura" placeholder="Largura (qtd)" min="1" required>
-                <input type="number" id="qtd-altura" placeholder="Altura (qtd)" min="1" required>
+                <div class="input-row">
+                    <input type="number" id="qtd-largura" placeholder="Largura (qtd)" min="1" required>
+                    <input type="number" id="qtd-altura" placeholder="Altura (qtd)" min="1" required>
+                </div>
             </div>
             <div id="qtd-metros" style="display:none;">
                 <label>Dimensões em metros:</label>
-                <input type="number" id="metros-largura" placeholder="Largura (m)" min="0.01" step="0.01">
-                <input type="number" id="metros-altura" placeholder="Altura (m)" min="0.01" step="0.01">
+                <div class="input-row">
+                    <input type="number" id="metros-largura" placeholder="Largura (m)" min="0.01" step="0.01">
+                    <input type="number" id="metros-altura" placeholder="Altura (m)" min="0.01" step="0.01">
+                </div>
             </div>
             <button type="submit" onclick="calcularPainel()">Calcular</button>
         </form>
