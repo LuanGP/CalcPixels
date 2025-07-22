@@ -308,12 +308,26 @@
             timeout: 5000
         };
         
+        // Função para detectar se está rodando localmente
+        function isLocalEnvironment() {
+            return window.location.protocol === 'file:' || 
+                   window.location.hostname === 'localhost' || 
+                   window.location.hostname === '127.0.0.1';
+        }
+        
         // Função para inicializar o contador
         async function initializeCounter() {
             try {
                 // Verificar se as credenciais foram configuradas
                 if (!COUNTER_CONFIG.workspace || !COUNTER_CONFIG.accessToken) {
                     document.getElementById('counter-display').textContent = 'Configure as credenciais da API';
+                    document.getElementById('counter-stats').style.display = 'none';
+                    return;
+                }
+                
+                // Se estiver rodando localmente, mostrar mensagem informativa
+                if (isLocalEnvironment()) {
+                    document.getElementById('counter-display').textContent = 'Contador disponível no GitHub Pages';
                     document.getElementById('counter-stats').style.display = 'none';
                     return;
                 }
@@ -332,7 +346,14 @@
                 
             } catch (error) {
                 console.error('Erro ao inicializar contador:', error);
-                document.getElementById('counter-display').textContent = 'Erro ao carregar contador';
+                
+                // Se for erro de CORS ou rede, mostrar mensagem específica
+                if (error.message && error.message.includes('CORS') || 
+                    error.code === 'ERR_NETWORK') {
+                    document.getElementById('counter-display').textContent = 'Contador disponível no GitHub Pages';
+                } else {
+                    document.getElementById('counter-display').textContent = 'Erro ao carregar contador';
+                }
                 document.getElementById('counter-stats').style.display = 'none';
             }
         }
