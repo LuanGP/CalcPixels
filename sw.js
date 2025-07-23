@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.7';
+const CACHE_NAME = 'calcpixels-v1.6.8';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -25,30 +25,21 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Para HTML, SEMPRE buscar do servidor (sem cache)
+  // Para HTML, NÃO interceptar - deixar o navegador buscar diretamente
   if (event.request.url.includes('index.html')) {
-    event.respondWith(
-      fetch(event.request, { 
-        cache: 'no-store',
-        headers: {
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-          'Pragma': 'no-cache',
-          'Expires': '0'
-        }
-      })
-    );
-  } else {
-    // Para outros recursos, usar cache primeiro
-    event.respondWith(
-      caches.match(event.request)
-        .then((response) => {
-          if (response) {
-            return response;
-          }
-          return fetch(event.request);
-        })
-    );
+    return;
   }
+  
+  // Para outros recursos, usar cache
+  event.respondWith(
+    caches.match(event.request)
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+        return fetch(event.request);
+      })
+  );
 });
 
 // Forçar atualização quando Service Worker é ativado
