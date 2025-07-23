@@ -207,37 +207,7 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         <form id="form-calc" onsubmit="return false;">
             <label for="gabinete-select">Painel:</label>
             <select id="gabinete-select" onchange="toggleManualInputs()" required>
-                <optgroup label="P3.9">
-                    <option value="128x256">P3.9 0.5x1 (128x256)</option>
-                    <option value="128x128">P3.9 0.5x0.5 (128x128)</option>
-                </optgroup>
-                <optgroup label="P2.x">
-                    <option value="192x192">P2.5 0.5x0.5 (192x192)</option>
-                    <option value="256x256">P2.0 0.5x0.5 (256x256)</option>
-                </optgroup>
-                <optgroup label="P2.9">
-                    <option value="168x168">P2.9 0.5x0.5 (168x168)</option>
-                    <option value="336x168">P2.9 1x0.5 (336x168)</option>
-                </optgroup>
-                <optgroup label="P5">
-                    <option value="192x192">P5 0.96x0.96 (192x192)</option>
-                    <option value="128x128">P5 0.64x0.64 (128x128)</option>
-                </optgroup>
-                <optgroup label="P6">
-                    <option value="160x160">P6 0.96x0.96 (160x160)</option>
-                    <option value="96x96">P6 0.576x0.576 (96x96)</option>
-                </optgroup>
-                <optgroup label="P10">
-                    <option value="96x96">P10 0.96x0.96 (96x96)</option>
-                </optgroup>
-                <optgroup label="P4">
-                    <option value="128x128_P4">P4 0.512x0.512 (128x128)</option>
-                    <option value="192x192_P4">P4 0.768x0.768 (192x192)</option>
-                    <option value="256x256_P4">P4 1x1 (256x256)</option>
-                </optgroup>
-                <optgroup label="Manual">
-                    <option value="manual">Manual</option>
-                </optgroup>
+                <!-- Opções serão populadas dinamicamente pelo JS -->
             </select>
             <div id="manual-inputs" style="display:none;">
                 <input type="number" id="pixels-largura" placeholder="Largura (px)" min="1">
@@ -358,20 +328,18 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
 
         // Tabela universal de gabinetes
         const modelosGabinetes = [
-            { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
-            { id: '128x128', label: 'P3.9 0.5x0.5 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P3.9' },
             { id: '192x192', label: 'P2.5 0.5x0.5 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
             { id: '256x256', label: 'P2.0 0.5x0.5 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-            { id: '168x168', label: 'P2.9 0.5x0.5 (168x168)', pixelsLargura: 168, pixelsAltura: 168, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.9' },
-            { id: '336x168', label: 'P2.9 1x0.5 (336x168)', pixelsLargura: 336, pixelsAltura: 168, larguraRealM: 1, alturaRealM: 0.5, grupo: 'P2.9' },
+            { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
+            { id: '128x128', label: 'P3.9 0.5x0.5 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P3.9' },
+            { id: '128x128_P4', label: 'P4 0.512x0.512 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.512, alturaRealM: 0.512, grupo: 'P4' },
+            { id: '192x192_P4', label: 'P4 0.768x0.768 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.768, alturaRealM: 0.768, grupo: 'P4' },
+            { id: '256x256_P4', label: 'P4 1x1 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 1, alturaRealM: 1, grupo: 'P4' },
             { id: '192x192_P5', label: 'P5 0.96x0.96 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P5' },
             { id: '128x128_P5', label: 'P5 0.64x0.64 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.64, alturaRealM: 0.64, grupo: 'P5' },
             { id: '160x160', label: 'P6 0.96x0.96 (160x160)', pixelsLargura: 160, pixelsAltura: 160, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P6' },
             { id: '96x96_P6', label: 'P6 0.576x0.576 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.576, alturaRealM: 0.576, grupo: 'P6' },
             { id: '96x96', label: 'P10 0.96x0.96 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P10' },
-            { id: '128x128_P4', label: 'P4 0.512x0.512 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.512, alturaRealM: 0.512, grupo: 'P4' },
-            { id: '192x192_P4', label: 'P4 0.768x0.768 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.768, alturaRealM: 0.768, grupo: 'P4' },
-            { id: '256x256_P4', label: 'P4 1x1 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 1, alturaRealM: 1, grupo: 'P4' },
             { id: 'manual', label: 'Manual', grupo: 'Manual' }
         ];
 
@@ -379,7 +347,12 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         function popularDropdownGabinetes() {
             const select = document.getElementById('gabinete-select');
             select.innerHTML = '';
-            const grupos = [...new Set(modelosGabinetes.map(m => m.grupo))];
+            // Agrupar por grupo e ordenar
+            const grupos = [...new Set(modelosGabinetes.map(m => m.grupo))].sort((a, b) => {
+                // Ordem customizada
+                const ordem = ['P2.x', 'P3.9', 'P4', 'P5', 'P6', 'P10', 'Manual'];
+                return ordem.indexOf(a) - ordem.indexOf(b);
+            });
             grupos.forEach(grupo => {
                 const optgroup = document.createElement('optgroup');
                 optgroup.label = grupo;
