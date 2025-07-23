@@ -411,7 +411,7 @@
         // Função para incrementar contador de visitas
         async function incrementVisits() {
             try {
-                const response = await fetch('/api/increment-visits', {
+                const response = await fetch('/.netlify/functions/increment-visits', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -429,7 +429,7 @@
         // Função para incrementar contador de cálculos
         async function incrementCalculations() {
             try {
-                const response = await fetch('/api/increment-calculations', {
+                const response = await fetch('/.netlify/functions/increment-calculations', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -456,7 +456,7 @@
         // Carregar contadores ao iniciar
         async function loadCounters() {
             try {
-                const response = await fetch('/api/get-counters');
+                const response = await fetch('/.netlify/functions/get-counters');
                 if (response.ok) {
                     const data = await response.json();
                     updateCounters(data.visits, data.calculations);
