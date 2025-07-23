@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.7.1';
+const CACHE_NAME = 'calcpixels-v1.7.2';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -25,8 +25,21 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Para HTML, NÃO interceptar - deixar o navegador buscar diretamente
+  // Para HTML, SEMPRE buscar do servidor (nunca cache)
   if (event.request.url.includes('index.html')) {
+    event.respondWith(
+      fetch(event.request, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      }).catch(() => {
+        // Se falhar, buscar do servidor sem cache
+        return fetch(event.request, { cache: 'no-store' });
+      })
+    );
     return;
   }
   
@@ -59,4 +72,11 @@ self.addEventListener('activate', (event) => {
       return self.clients.claim();
     })
   );
+});
+
+// Responder ao skip waiting
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 }); 
