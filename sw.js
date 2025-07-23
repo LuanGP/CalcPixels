@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.6';
+const CACHE_NAME = 'calcpixels-v1.6.7';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -25,24 +25,17 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Para HTML, sempre tentar network primeiro (atualizações)
+  // Para HTML, SEMPRE buscar do servidor (sem cache)
   if (event.request.url.includes('index.html')) {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
-        .then((response) => {
-          // Se network funcionou, atualizar cache
-          if (response.status === 200) {
-            const responseClone = response.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, responseClone);
-            });
-          }
-          return response;
-        })
-        .catch(() => {
-          // Se network falhou, usar cache
-          return caches.match(event.request);
-        })
+      fetch(event.request, { 
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
     );
   } else {
     // Para outros recursos, usar cache primeiro
