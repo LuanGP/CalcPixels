@@ -183,7 +183,7 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.3.0</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.3.1</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -199,6 +199,17 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
             Toque no ícone <span style="font-weight: bold;">📤</span> e depois "Adicionar à Tela Inicial"
         </div>
         <button onclick="document.getElementById('ios-install-banner').style.display='none'" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.8em; cursor: pointer;">
+            ✕ Fechar
+        </button>
+    </div>
+    
+    <!-- Banner para Android -->
+    <div id="android-install-banner" style="display: none; background: #1a237e; color: white; padding: 12px; margin: 0 20px 15px 20px; border-radius: 8px; text-align: center; font-size: 0.9em;">
+        <div style="margin-bottom: 8px;">📱 Para instalar no Android:</div>
+        <div style="font-size: 0.85em; opacity: 0.9;">
+            <div id="android-instructions">Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar à tela inicial"</div>
+        </div>
+        <button onclick="document.getElementById('android-install-banner').style.display='none'" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.8em; cursor: pointer;">
             ✕ Fechar
         </button>
     </div>
@@ -272,10 +283,23 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         const installContainer = document.getElementById('install-container');
         const installButton = document.getElementById('install-button');
         const iosBanner = document.getElementById('ios-install-banner');
+        const androidBanner = document.getElementById('android-install-banner');
 
-        // Detectar iOS
+        // Detectar dispositivos
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isAndroid = /Android/.test(navigator.userAgent);
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        // Detectar navegador Android específico
+        function detectAndroidBrowser() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Chrome')) return 'chrome';
+            if (userAgent.includes('Firefox')) return 'firefox';
+            if (userAgent.includes('SamsungBrowser')) return 'samsung';
+            if (userAgent.includes('Opera')) return 'opera';
+            if (userAgent.includes('Edge')) return 'edge';
+            return 'generic';
+        }
         
         // Desabilitar PWA se rodando localmente
         if (location.protocol === 'file:') {
@@ -285,9 +309,32 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
             }
             console.log('PWA desabilitada - rodando localmente via file://');
         } else {
-            // Mostrar banner iOS se não estiver em modo standalone
+            // Mostrar banners específicos se não estiver em modo standalone
             if (isIOS && !isStandalone) {
                 iosBanner.style.display = 'block';
+            } else if (isAndroid && !isStandalone) {
+                // Mostrar instruções específicas para Android
+                const browser = detectAndroidBrowser();
+                const instructionsDiv = document.getElementById('android-instructions');
+                
+                switch(browser) {
+                    case 'chrome':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Instalar app" ou "Adicionar à tela inicial"';
+                        break;
+                    case 'firefox':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar à tela inicial"';
+                        break;
+                    case 'samsung':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar página à tela inicial"';
+                        break;
+                    case 'opera':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar à tela inicial"';
+                        break;
+                    default:
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e procure por "Adicionar à tela inicial" ou "Instalar app"';
+                }
+                
+                androidBanner.style.display = 'block';
             }
             
             // Forçar atualização em mobile
@@ -322,7 +369,43 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
 
         window.addEventListener('appinstalled', () => {
             installContainer.style.display = 'none';
+            iosBanner.style.display = 'none';
+            androidBanner.style.display = 'none';
         });
+
+        // Função para mostrar instruções manuais se o botão não aparecer
+        function showManualInstructions() {
+            if (isAndroid && !isStandalone) {
+                const browser = detectAndroidBrowser();
+                const instructionsDiv = document.getElementById('android-instructions');
+                
+                switch(browser) {
+                    case 'chrome':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Instalar app" ou "Adicionar à tela inicial"';
+                        break;
+                    case 'firefox':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar à tela inicial"';
+                        break;
+                    case 'samsung':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar página à tela inicial"';
+                        break;
+                    case 'opera':
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e depois "Adicionar à tela inicial"';
+                        break;
+                    default:
+                        instructionsDiv.innerHTML = 'Toque no ícone <span style="font-weight: bold;">⋮</span> (menu) e procure por "Adicionar à tela inicial" ou "Instalar app"';
+                }
+                
+                androidBanner.style.display = 'block';
+            }
+        }
+
+        // Mostrar instruções manuais após 3 segundos se o botão não aparecer
+        setTimeout(() => {
+            if (isAndroid && !isStandalone && installContainer.style.display === 'none') {
+                showManualInstructions();
+            }
+        }, 3000);
 
 
 
