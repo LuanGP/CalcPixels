@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Painel de LED</title>
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="manifest.json" id="manifest-link">
     <meta name="theme-color" content="#1a237e">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -175,7 +175,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.5.5</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.6.0</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -267,9 +267,18 @@
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
         
-        // Mostrar banner iOS se não estiver em modo standalone
-        if (isIOS && !isStandalone) {
-            iosBanner.style.display = 'block';
+        // Desabilitar PWA se rodando localmente
+        if (location.protocol === 'file:') {
+            const manifestLink = document.getElementById('manifest-link');
+            if (manifestLink) {
+                manifestLink.remove();
+            }
+            console.log('PWA desabilitada - rodando localmente via file://');
+        } else {
+            // Mostrar banner iOS se não estiver em modo standalone
+            if (isIOS && !isStandalone) {
+                iosBanner.style.display = 'block';
+            }
         }
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -294,7 +303,7 @@
         });
 
         // Registrar Service Worker
-        if ('serviceWorker' in navigator) {
+        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/CalcPixels/sw.js')
                     .then((registration) => {
@@ -304,6 +313,8 @@
                         console.log('SW falhou: ', registrationError);
                     });
             });
+        } else if (location.protocol === 'file:') {
+            console.log('Service Worker desabilitado - rodando localmente via file://');
         }
 
         // Tabela universal de gabinetes
