@@ -180,7 +180,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.7.2</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.7.3</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -319,37 +319,24 @@
             installContainer.style.display = 'none';
         });
 
-        // Registrar Service Worker
-        if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/CalcPixels/sw.js')
-                    .then((registration) => {
-                        console.log('SW registrado: ', registration);
-                        
-                        // Forçar atualização imediata
-                        if (navigator.serviceWorker.controller) {
-                            navigator.serviceWorker.controller.postMessage({type: 'SKIP_WAITING'});
+        // Service Worker temporariamente desabilitado para resolver problema de cache
+        console.log('Service Worker desabilitado temporariamente');
+        
+        // Forçar reload a cada 5 segundos para garantir versão mais recente
+        setInterval(() => {
+            if (location.href.includes('github.io')) {
+                fetch(location.href, { cache: 'no-store' })
+                    .then(response => response.text())
+                    .then(html => {
+                        if (html.includes('v1.7.2')) {
+                            console.log('Versão atual detectada');
+                        } else {
+                            console.log('Versão antiga detectada, recarregando...');
+                            window.location.reload();
                         }
-                        
-                        // Verificar se há nova versão do Service Worker
-                        registration.addEventListener('updatefound', () => {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    // Nova versão disponível, recarregar página
-                                    console.log('Nova versão do SW disponível, recarregando...');
-                                    window.location.reload();
-                                }
-                            });
-                        });
-                    })
-                    .catch((registrationError) => {
-                        console.log('SW falhou: ', registrationError);
                     });
-            });
-        } else if (location.protocol === 'file:') {
-            console.log('Service Worker desabilitado - rodando localmente via file://');
-        }
+            }
+        }, 5000);
 
         // Tabela universal de gabinetes
         const modelosGabinetes = [
