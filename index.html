@@ -183,14 +183,7 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.4.0</span></h1>
-    
-    <!-- Link para Admin -->
-    <div style="text-align: center; margin-bottom: 10px;">
-        <a href="/admin.html" style="color: #1a237e; text-decoration: none; font-size: 0.9em; padding: 5px 10px; border: 1px solid #1a237e; border-radius: 5px; background: rgba(26,35,126,0.05);">
-            🔧 Admin
-        </a>
-    </div>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.3.0</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -333,63 +326,22 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
 
 
 
-        // Variável global para armazenar os painéis da database
-        let modelosGabinetes = [];
-
-        // Função para carregar painéis da database
-        async function carregarPainelsDaDatabase() {
-            try {
-                const response = await fetch('/.netlify/functions/manage-panels');
-                if (response.ok) {
-                    const painels = await response.json();
-                    // Converter formato da database para o formato esperado pelo código
-                    modelosGabinetes = painels.map(p => ({
-                        id: p.panel_id,
-                        label: p.label,
-                        pixelsLargura: p.pixels_largura,
-                        pixelsAltura: p.pixels_altura,
-                        larguraRealM: p.largura_real_m,
-                        alturaRealM: p.altura_real_m,
-                        grupo: p.grupo
-                    }));
-                    
-                    // Adicionar opção manual se não existir
-                    if (!modelosGabinetes.find(m => m.id === 'manual')) {
-                        modelosGabinetes.push({ id: 'manual', label: 'Manual', grupo: 'Manual' });
-                    }
-                    
-                    popularDropdownGabinetes();
-                } else {
-                    console.error('Erro ao carregar painéis da database');
-                    // Fallback para dados locais em caso de erro
-                    carregarDadosLocais();
-                }
-            } catch (error) {
-                console.error('Erro ao carregar painéis:', error);
-                // Fallback para dados locais em caso de erro
-                carregarDadosLocais();
-            }
-        }
-
-        // Função de fallback com dados locais
-        function carregarDadosLocais() {
-            modelosGabinetes = [
-                { id: '192x192', label: 'P2.5 0.5x0.5 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-                { id: '256x256', label: 'P2.0 0.5x0.5 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-                { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
-                { id: '128x128', label: 'P3.9 0.5x0.5 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P3.9' },
-                { id: '128x128_P4', label: 'P4 0.512x0.512 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.512, alturaRealM: 0.512, grupo: 'P4' },
-                { id: '192x192_P4', label: 'P4 0.768x0.768 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.768, alturaRealM: 0.768, grupo: 'P4' },
-                { id: '256x256_P4', label: 'P4 1x1 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 1, alturaRealM: 1, grupo: 'P4' },
-                { id: '192x192_P5', label: 'P5 0.96x0.96 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P5' },
-                { id: '128x128_P5', label: 'P5 0.64x0.64 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.64, alturaRealM: 0.64, grupo: 'P5' },
-                { id: '160x160', label: 'P6 0.96x0.96 (160x160)', pixelsLargura: 160, pixelsAltura: 160, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P6' },
-                { id: '96x96_P6', label: 'P6 0.576x0.576 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.576, alturaRealM: 0.576, grupo: 'P6' },
-                { id: '96x96', label: 'P10 0.96x0.96 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P10' },
-                { id: 'manual', label: 'Manual', grupo: 'Manual' }
-            ];
-            popularDropdownGabinetes();
-        }
+        // Tabela universal de gabinetes
+        const modelosGabinetes = [
+            { id: '192x192', label: 'P2.5 0.5x0.5 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
+            { id: '256x256', label: 'P2.0 0.5x0.5 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
+            { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
+            { id: '128x128', label: 'P3.9 0.5x0.5 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P3.9' },
+            { id: '128x128_P4', label: 'P4 0.512x0.512 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.512, alturaRealM: 0.512, grupo: 'P4' },
+            { id: '192x192_P4', label: 'P4 0.768x0.768 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.768, alturaRealM: 0.768, grupo: 'P4' },
+            { id: '256x256_P4', label: 'P4 1x1 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 1, alturaRealM: 1, grupo: 'P4' },
+            { id: '192x192_P5', label: 'P5 0.96x0.96 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P5' },
+            { id: '128x128_P5', label: 'P5 0.64x0.64 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.64, alturaRealM: 0.64, grupo: 'P5' },
+            { id: '160x160', label: 'P6 0.96x0.96 (160x160)', pixelsLargura: 160, pixelsAltura: 160, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P6' },
+            { id: '96x96_P6', label: 'P6 0.576x0.576 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.576, alturaRealM: 0.576, grupo: 'P6' },
+            { id: '96x96', label: 'P10 0.96x0.96 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P10' },
+            { id: 'manual', label: 'Manual', grupo: 'Manual' }
+        ];
 
         // Função para popular o dropdown de gabinetes
         function popularDropdownGabinetes() {
@@ -416,7 +368,7 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         
         // Chamar ao carregar
         window.onload = function() {
-            carregarPainelsDaDatabase();
+            popularDropdownGabinetes();
         };
 
         function toggleManualInputs() {
