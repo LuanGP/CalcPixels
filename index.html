@@ -172,7 +172,7 @@
     <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.5.0</span></h1>
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
-            <label>Gabinete:</label>
+            <label for="gabinete-select">Gabinete:</label>
             <select id="gabinete-select" onchange="toggleManualInputs()" required>
                 <optgroup label="P3.9">
                     <option value="128x256">P3.9 0.5x1 (128x256)</option>
@@ -213,14 +213,14 @@
                 </select>
             </div>
             <div id="qtd-gabinetes">
-                <label>Quantidade de gabinetes:</label>
+                <label for="qtd-largura">Quantidade de gabinetes:</label>
                 <div class="input-row">
                     <input type="number" id="qtd-largura" placeholder="Largura (qtd)" min="1" required>
                     <input type="number" id="qtd-altura" placeholder="Altura (qtd)" min="1" required>
                 </div>
             </div>
             <div id="qtd-metros" style="display:none;">
-                <label>Dimensões em metros:</label>
+                <label for="metros-largura">Dimensões em metros:</label>
                 <div class="input-row">
                     <input type="number" id="metros-largura" placeholder="Largura (m)" min="0.01" step="0.01">
                     <input type="number" id="metros-altura" placeholder="Altura (m)" min="0.01" step="0.01">
