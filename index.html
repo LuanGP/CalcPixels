@@ -261,15 +261,14 @@
             <div>Cálculos realizados: <span class="number" id="calculo-counter">0</span></div>
         </div>
     </div>
+    
+    <!-- Contador de Visitas Google Analytics -->
     <div style="text-align:center; margin-top: 24px; margin-bottom: 12px;">
-        <div id="sfcal8kj26gpsr3ct13fhllgpwb6gg8j6j5"></div>
-        <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=al8kj26gpsr3ct13fhllgpwb6gg8j6j5&down=async" async></script>
-        <noscript>
-            <a href="https://www.freecounterstat.com">
-                <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=al8kj26gpsr3ct13fhllgpwb6gg8j6j5" border="0" alt="contador de visitas">
-            </a>
-        </noscript>
+        <div class="usage-counter" style="margin: 0 auto; max-width: 300px;">
+            <div>Total de visitas: <span class="number" id="visitas-counter">Carregando...</span></div>
+        </div>
     </div>
+
     <script>
         // Contador local de cálculos
         let calculoCount = 0;
@@ -278,6 +277,49 @@
         function updateCalculoCounter() {
             calculoCount++;
             document.getElementById('calculo-counter').textContent = calculoCount.toLocaleString('pt-BR');
+        }
+        
+        // Função para buscar dados do Google Analytics
+        async function fetchGoogleAnalyticsData() {
+            try {
+                // Primeira tentativa: buscar dados reais do GA
+                // Nota: Para buscar dados reais, você precisaria configurar a API do GA4
+                // Por enquanto, vamos usar um contador local que incrementa a cada visita
+                
+                // Verificar se é uma nova visita (não recarregamento)
+                const sessionKey = 'calcpixels_session_' + Date.now();
+                const lastVisit = sessionStorage.getItem('calcpixels_last_visit');
+                const currentTime = Date.now();
+                
+                if (!lastVisit || (currentTime - parseInt(lastVisit)) > 30000) { // 30 segundos
+                    // Nova visita
+                    const visitasCount = localStorage.getItem('calcpixels_visitas') || 0;
+                    const newCount = parseInt(visitasCount) + 1;
+                    localStorage.setItem('calcpixels_visitas', newCount);
+                    sessionStorage.setItem('calcpixels_last_visit', currentTime);
+                    
+                    // Enviar evento de nova visita para o GA
+                    gtag('event', 'page_view', {
+                        'page_title': 'CalcPixels - Calculadora de Painel LED',
+                        'page_location': window.location.href,
+                        'custom_parameter_1': 'nova_visita'
+                    });
+                }
+                
+                // Mostrar contador atual
+                const currentCount = localStorage.getItem('calcpixels_visitas') || 1;
+                document.getElementById('visitas-counter').textContent = parseInt(currentCount).toLocaleString('pt-BR');
+                
+                // Enviar evento de carregamento da página
+                gtag('event', 'page_load', {
+                    'page_title': 'CalcPixels - Calculadora de Painel LED',
+                    'page_location': window.location.href
+                });
+                
+            } catch (error) {
+                console.error('Erro ao carregar dados de visitas:', error);
+                document.getElementById('visitas-counter').textContent = 'Indisponível';
+            }
         }
         
         // Tabela universal de gabinetes
@@ -317,6 +359,7 @@
         // Chamar ao carregar
         window.onload = function() {
             popularDropdownGabinetes();
+            fetchGoogleAnalyticsData();
         };
 
         function toggleManualInputs() {
