@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.3';
+const CACHE_NAME = 'calcpixels-v1.6.4';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -25,14 +25,35 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        if (response) {
+  // Para HTML, sempre tentar network primeiro (atualizações)
+  if (event.request.url.includes('index.html')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          // Se network funcionou, atualizar cache
+          if (response.status === 200) {
+            const responseClone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, responseClone);
+            });
+          }
           return response;
-        }
-        return fetch(event.request);
-      }
-    )
-  );
+        })
+        .catch(() => {
+          // Se network falhou, usar cache
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    // Para outros recursos, usar cache primeiro
+    event.respondWith(
+      caches.match(event.request)
+        .then((response) => {
+          if (response) {
+            return response;
+          }
+          return fetch(event.request);
+        })
+    );
+  }
 }); 
