@@ -4,6 +4,19 @@ exports.handler = async function(event, context) {
   const client = new Client({ connectionString: process.env.NETLIFY_DATABASE_URL });
   await client.connect();
 
+  // Suporte ao CORS preflight
+  if (event.method === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS'
+      },
+      body: ''
+    };
+  }
+
   try {
     // Criar tabela se não existir
     await client.query(`

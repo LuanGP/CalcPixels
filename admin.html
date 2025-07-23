@@ -122,8 +122,32 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔧 Admin CalcPixels</h1>
+    <!-- Tela de Login -->
+    <div id="login-screen" class="container">
+        <h1>🔐 Login Admin</h1>
+        <div class="admin-section">
+            <h2>🔑 Autenticação</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="username">Usuário:</label>
+                    <input type="text" id="username" required placeholder="admin">
+                </div>
+                <div class="form-group">
+                    <label for="password">Senha:</label>
+                    <input type="password" id="password" required placeholder="admin123">
+                </div>
+                <button type="submit" class="btn-success">🔐 Entrar</button>
+            </form>
+            <div id="login-message"></div>
+        </div>
+    </div>
+
+    <!-- Tela Principal do Admin -->
+    <div id="admin-screen" class="container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1>🔧 Admin CalcPixels</h1>
+            <button onclick="logout()" class="btn-danger">🚪 Sair</button>
+        </div>
         
         <div class="admin-section">
             <h2>📊 Migração de Dados</h2>
@@ -184,6 +208,67 @@
     </div>
 
     <script>
+        // Verificar se já está logado
+        function checkAuth() {
+            const token = localStorage.getItem('admin_token');
+            if (token) {
+                showAdminScreen();
+            } else {
+                showLoginScreen();
+            }
+        }
+
+        // Mostrar tela de login
+        function showLoginScreen() {
+            document.getElementById('login-screen').style.display = 'block';
+            document.getElementById('admin-screen').style.display = 'none';
+        }
+
+        // Mostrar tela do admin
+        function showAdminScreen() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-screen').style.display = 'block';
+            loadPanels(); // Carregar painéis automaticamente
+        }
+
+        // Logout
+        function logout() {
+            localStorage.removeItem('admin_token');
+            showLoginScreen();
+        }
+
+        // Login
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('login-message');
+
+            try {
+                const response = await fetch('/.netlify/functions/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    localStorage.setItem('admin_token', data.token);
+                    messageDiv.innerHTML = '<div class="message success">Login realizado com sucesso!</div>';
+                    setTimeout(() => {
+                        showAdminScreen();
+                    }, 1000);
+                } else {
+                    messageDiv.innerHTML = '<div class="message error">' + (data.error || 'Erro no login') + '</div>';
+                }
+            } catch (error) {
+                messageDiv.innerHTML = '<div class="message error">Erro de conexão</div>';
+            }
+        });
         // Função para mostrar mensagens
         function showMessage(message, type = 'success') {
             const div = document.createElement('div');
@@ -339,7 +424,7 @@
 
         // Carregar painéis ao iniciar
         window.onload = function() {
-            loadPanels();
+            checkAuth();
         };
     </script>
 </body>

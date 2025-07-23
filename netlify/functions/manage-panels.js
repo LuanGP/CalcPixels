@@ -39,6 +39,17 @@ exports.handler = async function(event, context) {
     let result;
 
     switch (method) {
+      case 'OPTIONS':
+        // Suporte ao CORS preflight
+        return {
+          statusCode: 200,
+          headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Headers': 'Content-Type',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
+          },
+          body: ''
+        };
       case 'GET':
         // Listar todos os painéis ativos
         const res = await client.query('SELECT * FROM panels WHERE ativo = true ORDER BY grupo, label');
