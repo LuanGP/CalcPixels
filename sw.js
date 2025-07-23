@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.1';
+const CACHE_NAME = 'calcpixels-v1.6.2';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -9,6 +9,18 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(urlsToCache))
+      .then(() => {
+        // Limpar caches antigos
+        return caches.keys().then((cacheNames) => {
+          return Promise.all(
+            cacheNames.map((cacheName) => {
+              if (cacheName !== CACHE_NAME) {
+                return caches.delete(cacheName);
+              }
+            })
+          );
+        });
+      })
   );
 });
 
