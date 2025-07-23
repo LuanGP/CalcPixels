@@ -180,7 +180,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.7.4</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.8.0</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -319,44 +319,7 @@
             installContainer.style.display = 'none';
         });
 
-        // Service Worker completamente desabilitado
-        console.log('Service Worker desabilitado completamente');
-        
-        // Desregistrar Service Worker se existir
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                for(let registration of registrations) {
-                    registration.unregister();
-                    console.log('Service Worker desregistrado');
-                }
-            });
-        }
-        
-        // Forçar reload a cada 3 segundos para garantir versão mais recente
-        setInterval(() => {
-            if (location.href.includes('github.io')) {
-                fetch(location.href, { 
-                    cache: 'no-store',
-                    headers: {
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    if (html.includes('v1.7.3')) {
-                        console.log('Versão atual detectada');
-                    } else {
-                        console.log('Versão antiga detectada, recarregando...');
-                        window.location.reload();
-                    }
-                })
-                .catch(() => {
-                    console.log('Erro ao verificar versão');
-                });
-            }
-        }, 3000);
+
 
         // Tabela universal de gabinetes
         const modelosGabinetes = [
