@@ -180,7 +180,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.8.0</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.0.0</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -259,6 +259,21 @@
             <button type="submit" onclick="calcularPainel()">Calcular</button>
         </form>
         <div id="resultado" class="result-box"></div>
+    </div>
+    
+    <!-- Contadores -->
+    <div style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(26,35,126,0.05); border-radius: 10px; max-width: 420px; width: 100%;">
+        <div style="font-size: 0.9em; color: #1a237e; margin-bottom: 10px; font-weight: 500;">📊 Estatísticas</div>
+        <div style="display: flex; justify-content: space-around; gap: 20px;">
+            <div>
+                <div style="font-size: 1.1em; font-weight: bold; color: #1a237e;" id="visits-counter">0</div>
+                <div style="font-size: 0.8em; color: #666;">Visitas</div>
+            </div>
+            <div>
+                <div style="font-size: 1.1em; font-weight: bold; color: #1a237e;" id="calculations-counter">0</div>
+                <div style="font-size: 0.8em; color: #666;">Cálculos</div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -393,6 +408,69 @@
             }
         }
 
+        // Função para incrementar contador de visitas
+        async function incrementVisits() {
+            try {
+                const response = await fetch('/api/increment-visits', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCounters(data.visits, data.calculations);
+                }
+            } catch (error) {
+                console.log('Erro ao incrementar visitas');
+            }
+        }
+
+        // Função para incrementar contador de cálculos
+        async function incrementCalculations() {
+            try {
+                const response = await fetch('/api/increment-calculations', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCounters(data.visits, data.calculations);
+                }
+            } catch (error) {
+                console.log('Erro ao incrementar cálculos');
+            }
+        }
+
+        // Função para atualizar contadores na interface
+        function updateCounters(visits, calculations) {
+            const visitsElement = document.getElementById('visits-counter');
+            const calculationsElement = document.getElementById('calculations-counter');
+            
+            if (visitsElement) visitsElement.textContent = visits.toLocaleString('pt-BR');
+            if (calculationsElement) calculationsElement.textContent = calculations.toLocaleString('pt-BR');
+        }
+
+        // Carregar contadores ao iniciar
+        async function loadCounters() {
+            try {
+                const response = await fetch('/api/get-counters');
+                if (response.ok) {
+                    const data = await response.json();
+                    updateCounters(data.visits, data.calculations);
+                }
+            } catch (error) {
+                console.log('Erro ao carregar contadores');
+            }
+        }
+
+        // Incrementar visitas ao carregar a página
+        window.addEventListener('load', () => {
+            incrementVisits();
+        });
+
         function calcularPainel() {
             const gabineteId = document.getElementById('gabinete-select').value;
             const gabineteModelo = modelosGabinetes.find(m => m.id === gabineteId);
@@ -468,6 +546,9 @@
                 `Quantidade de gabinetes: <b>${qtdLarg * qtdAlt} (${qtdLarg}x${qtdAlt})</b><br>` +
                 `Pixels totais do projeto: <b>${totalPixels.toLocaleString('pt-BR')}</b><br>` +
                 `Portas na processadora: <b>${portasNecessarias}</b>`;
+            
+            // Incrementar contador de cálculos
+            incrementCalculations();
         }
     </script>
 </body>
