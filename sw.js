@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.2';
+const CACHE_NAME = 'calcpixels-v1.6.3';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
