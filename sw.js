@@ -1,4 +1,4 @@
-const CACHE_NAME = 'calcpixels-v1.6.4';
+const CACHE_NAME = 'calcpixels-v1.6.5';
 const urlsToCache = [
   '/CalcPixels/',
   '/CalcPixels/index.html',
@@ -28,7 +28,7 @@ self.addEventListener('fetch', (event) => {
   // Para HTML, sempre tentar network primeiro (atualizações)
   if (event.request.url.includes('index.html')) {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then((response) => {
           // Se network funcionou, atualizar cache
           if (response.status === 200) {
@@ -56,4 +56,23 @@ self.addEventListener('fetch', (event) => {
         })
     );
   }
+});
+
+// Forçar atualização quando Service Worker é ativado
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            console.log('Removendo cache antigo:', cacheName);
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => {
+      // Forçar controle da página imediatamente
+      return self.clients.claim();
+    })
+  );
 }); 
