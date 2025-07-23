@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Painel de LED</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a237e">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="CalcPixels">
+    <link rel="apple-touch-icon" href="icon-192.png">
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -169,7 +175,26 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.5.1</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.5.5</span></h1>
+    
+    <!-- Botão de instalação -->
+    <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
+        <button id="install-button" style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+            📱 Instalar App
+        </button>
+    </div>
+    
+    <!-- Banner para iOS -->
+    <div id="ios-install-banner" style="display: none; background: #1a237e; color: white; padding: 12px; margin: 0 20px 15px 20px; border-radius: 8px; text-align: center; font-size: 0.9em;">
+        <div style="margin-bottom: 8px;">📱 Para instalar no iPhone/iPad:</div>
+        <div style="font-size: 0.85em; opacity: 0.9;">
+            Toque no ícone <span style="font-weight: bold;">📤</span> e depois "Adicionar à Tela Inicial"
+        </div>
+        <button onclick="document.getElementById('ios-install-banner').style.display='none'" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.8em; cursor: pointer;">
+            ✕ Fechar
+        </button>
+    </div>
+    
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label for="gabinete-select">Gabinete:</label>
@@ -232,6 +257,55 @@
     </div>
 
     <script>
+        // PWA Installation
+        let deferredPrompt;
+        const installContainer = document.getElementById('install-container');
+        const installButton = document.getElementById('install-button');
+        const iosBanner = document.getElementById('ios-install-banner');
+
+        // Detectar iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        
+        // Mostrar banner iOS se não estiver em modo standalone
+        if (isIOS && !isStandalone) {
+            iosBanner.style.display = 'block';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installContainer.style.display = 'block';
+        });
+
+        installButton.addEventListener('click', async () => {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                if (outcome === 'accepted') {
+                    installContainer.style.display = 'none';
+                }
+                deferredPrompt = null;
+            }
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installContainer.style.display = 'none';
+        });
+
+        // Registrar Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/CalcPixels/sw.js')
+                    .then((registration) => {
+                        console.log('SW registrado: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW falhou: ', registrationError);
+                    });
+            });
+        }
+
         // Tabela universal de gabinetes
         const modelosGabinetes = [
             { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
