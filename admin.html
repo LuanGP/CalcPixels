@@ -246,7 +246,7 @@
             const messageDiv = document.getElementById('login-message');
 
             try {
-                const response = await fetch('/.netlify/functions/auth', {
+                const response = await fetch('/.netlify/functions/auth-simple', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
