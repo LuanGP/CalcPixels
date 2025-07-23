@@ -282,20 +282,16 @@
         // Função para buscar dados do Google Analytics
         async function fetchGoogleAnalyticsData() {
             try {
-                // Primeira tentativa: buscar dados reais do GA
-                // Nota: Para buscar dados reais, você precisaria configurar a API do GA4
-                // Por enquanto, vamos usar um contador local que incrementa a cada visita
+                // Usar um serviço externo para contador global
+                // Vamos usar um webhook simples para incrementar o contador
                 
                 // Verificar se é uma nova visita (não recarregamento)
-                const sessionKey = 'calcpixels_session_' + Date.now();
                 const lastVisit = sessionStorage.getItem('calcpixels_last_visit');
                 const currentTime = Date.now();
                 
                 if (!lastVisit || (currentTime - parseInt(lastVisit)) > 30000) { // 30 segundos
-                    // Nova visita
-                    const visitasCount = localStorage.getItem('calcpixels_visitas') || 0;
-                    const newCount = parseInt(visitasCount) + 1;
-                    localStorage.setItem('calcpixels_visitas', newCount);
+                    // Nova visita - incrementar contador global
+                    await incrementGlobalCounter();
                     sessionStorage.setItem('calcpixels_last_visit', currentTime);
                     
                     // Enviar evento de nova visita para o GA
@@ -306,9 +302,8 @@
                     });
                 }
                 
-                // Mostrar contador atual
-                const currentCount = localStorage.getItem('calcpixels_visitas') || 1;
-                document.getElementById('visitas-counter').textContent = parseInt(currentCount).toLocaleString('pt-BR');
+                // Buscar contador global atual
+                await fetchGlobalCounter();
                 
                 // Enviar evento de carregamento da página
                 gtag('event', 'page_load', {
@@ -319,6 +314,69 @@
             } catch (error) {
                 console.error('Erro ao carregar dados de visitas:', error);
                 document.getElementById('visitas-counter').textContent = 'Indisponível';
+            }
+        }
+        
+        // Função para incrementar contador global
+        async function incrementGlobalCounter() {
+            try {
+                // Usar Google Sheets como backend
+                const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxjWLBYg85HaITWAkkPak_reJCAScoHEYWgI8RJXbRTHQcqjBVoXzFRKUvlCf2bwGgA/exec';
+                
+                // Enviar requisição para incrementar contador
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'increment',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Erro ao incrementar contador');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao incrementar contador:', error);
+                // Fallback para localStorage
+                const currentCount = localStorage.getItem('calcpixels_global_visitas') || 0;
+                const newCount = parseInt(currentCount) + 1;
+                localStorage.setItem('calcpixels_global_visitas', newCount);
+            }
+        }
+        
+        // Função para buscar contador global
+        async function fetchGlobalCounter() {
+            try {
+                // Buscar contador do Google Sheets
+                const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxjWLBYg85HaITWAkkPak_reJCAScoHEYWgI8RJXbRTHQcqjBVoXzFRKUvlCf2bwGgA/exec';
+                
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        action: 'get'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    const currentCount = data.count || 1;
+                    document.getElementById('visitas-counter').textContent = currentCount.toLocaleString('pt-BR');
+                } else {
+                    throw new Error('Erro ao buscar dados');
+                }
+                
+            } catch (error) {
+                console.error('Erro ao buscar contador:', error);
+                // Fallback para localStorage
+                const currentCount = localStorage.getItem('calcpixels_global_visitas') || 1;
+                document.getElementById('visitas-counter').textContent = parseInt(currentCount).toLocaleString('pt-BR');
             }
         }
         
