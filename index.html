@@ -4,14 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calculadora de Painel de LED</title>
-    <!-- Google Analytics 4 -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XVQV5S1EMH"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-XVQV5S1EMH');
-    </script>
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
@@ -104,21 +96,6 @@
             min-width: 0;
             display: inline-block;
         }
-        .usage-counter {
-            text-align: center;
-            margin-top: 16px;
-            padding: 12px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(26,35,126,0.05);
-            font-size: 0.9em;
-            color: #666;
-        }
-        .usage-counter .number {
-            font-weight: 600;
-            color: #1a237e;
-            font-size: 1.1em;
-        }
         @media (max-width: 600px) {
             body {
                 padding: 0 3vw;
@@ -175,11 +152,6 @@
                 font-size: 0.93em;
                 padding: 6px 6px;
             }
-            .usage-counter {
-                margin-top: 12px;
-                padding: 8px;
-                font-size: 0.85em;
-            }
         }
         /* Alinhar label e select na mesma linha para 'Quantidade de:' */
         .inline-label-select {
@@ -197,7 +169,7 @@
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.7.0</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v1.5.0</span></h1>
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label>Gabinete:</label>
@@ -257,129 +229,17 @@
             <button type="submit" onclick="calcularPainel()">Calcular</button>
         </form>
         <div id="resultado" class="result-box"></div>
-        <div class="usage-counter">
-            <div>Cálculos realizados: <span class="number" id="calculo-counter">0</span></div>
-        </div>
     </div>
-    
-    <!-- Contador de Visitas Google Analytics -->
     <div style="text-align:center; margin-top: 24px; margin-bottom: 12px;">
-        <div class="usage-counter" style="margin: 0 auto; max-width: 300px;">
-            <div>Total de visitas: <span class="number" id="visitas-counter">Carregando...</span></div>
-        </div>
+        <div id="sfcal8kj26gpsr3ct13fhllgpwb6gg8j6j5"></div>
+        <script type="text/javascript" src="https://counter1.optistats.ovh/private/counter.js?c=al8kj26gpsr3ct13fhllgpwb6gg8j6j5&down=async" async></script>
+        <noscript>
+            <a href="https://www.freecounterstat.com">
+                <img src="https://counter1.optistats.ovh/private/freecounterstat.php?c=al8kj26gpsr3ct13fhllgpwb6gg8j6j5" border="0" alt="contador de visitas">
+            </a>
+        </noscript>
     </div>
-
     <script>
-        // Contador local de cálculos
-        let calculoCount = 0;
-        
-        // Função para atualizar contador visual
-        function updateCalculoCounter() {
-            calculoCount++;
-            document.getElementById('calculo-counter').textContent = calculoCount.toLocaleString('pt-BR');
-        }
-        
-        // Função para buscar dados do Google Analytics
-        async function fetchGoogleAnalyticsData() {
-            try {
-                // Usar um serviço externo para contador global
-                // Vamos usar um webhook simples para incrementar o contador
-                
-                // Verificar se é uma nova visita (não recarregamento)
-                const lastVisit = sessionStorage.getItem('calcpixels_last_visit');
-                const currentTime = Date.now();
-                
-                if (!lastVisit || (currentTime - parseInt(lastVisit)) > 30000) { // 30 segundos
-                    // Nova visita - incrementar contador global
-                    await incrementGlobalCounter();
-                    sessionStorage.setItem('calcpixels_last_visit', currentTime);
-                    
-                    // Enviar evento de nova visita para o GA
-                    gtag('event', 'page_view', {
-                        'page_title': 'CalcPixels - Calculadora de Painel LED',
-                        'page_location': window.location.href,
-                        'custom_parameter_1': 'nova_visita'
-                    });
-                }
-                
-                // Buscar contador global atual
-                await fetchGlobalCounter();
-                
-                // Enviar evento de carregamento da página
-                gtag('event', 'page_load', {
-                    'page_title': 'CalcPixels - Calculadora de Painel LED',
-                    'page_location': window.location.href
-                });
-                
-            } catch (error) {
-                console.error('Erro ao carregar dados de visitas:', error);
-                document.getElementById('visitas-counter').textContent = 'Indisponível';
-            }
-        }
-        
-        // Função para incrementar contador global
-        async function incrementGlobalCounter() {
-            try {
-                // Usar Google Sheets como backend
-                const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxjWLBYg85HaITWAkkPak_reJCAScoHEYWgI8RJXbRTHQcqjBVoXzFRKUvlCf2bwGgA/exec';
-                
-                // Enviar requisição para incrementar contador
-                const response = await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'increment',
-                        timestamp: new Date().toISOString()
-                    })
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Erro ao incrementar contador');
-                }
-                
-            } catch (error) {
-                console.error('Erro ao incrementar contador:', error);
-                // Fallback para localStorage
-                const currentCount = localStorage.getItem('calcpixels_global_visitas') || 0;
-                const newCount = parseInt(currentCount) + 1;
-                localStorage.setItem('calcpixels_global_visitas', newCount);
-            }
-        }
-        
-        // Função para buscar contador global
-        async function fetchGlobalCounter() {
-            try {
-                // Buscar contador do Google Sheets
-                const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxjWLBYg85HaITWAkkPak_reJCAScoHEYWgI8RJXbRTHQcqjBVoXzFRKUvlCf2bwGgA/exec';
-                
-                const response = await fetch(GOOGLE_SHEETS_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        action: 'get'
-                    })
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    const currentCount = data.count || 1;
-                    document.getElementById('visitas-counter').textContent = currentCount.toLocaleString('pt-BR');
-                } else {
-                    throw new Error('Erro ao buscar dados');
-                }
-                
-            } catch (error) {
-                console.error('Erro ao buscar contador:', error);
-                // Fallback para localStorage
-                const currentCount = localStorage.getItem('calcpixels_global_visitas') || 1;
-                document.getElementById('visitas-counter').textContent = parseInt(currentCount).toLocaleString('pt-BR');
-            }
-        }
-        
         // Tabela universal de gabinetes
         const modelosGabinetes = [
             { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
@@ -417,7 +277,6 @@
         // Chamar ao carregar
         window.onload = function() {
             popularDropdownGabinetes();
-            fetchGoogleAnalyticsData();
         };
 
         function toggleManualInputs() {
@@ -528,18 +387,6 @@
                 `Quantidade de gabinetes: <b>${qtdLarg * qtdAlt} (${qtdLarg}x${qtdAlt})</b><br>` +
                 `Pixels totais do projeto: <b>${totalPixels.toLocaleString('pt-BR')}</b><br>` +
                 `Portas na processadora: <b>${portasNecessarias}</b>`;
-            
-            // Google Analytics Event Tracking
-            gtag('event', 'calcular_painel', {
-                'event_category': 'calculadora',
-                'event_label': gabineteId,
-                'value': totalPixels,
-                'custom_parameter_1': tipo,
-                'custom_parameter_2': `${qtdLarg}x${qtdAlt}`
-            });
-            
-            // Atualizar contador visual
-            updateCalculoCounter();
         }
     </script>
 </body>
