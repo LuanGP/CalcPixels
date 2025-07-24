@@ -1,7 +1,5 @@
 const { Client } = require('pg');
 
-const { Client } = require('pg');
-
 exports.handler = async function(event, context) {
   const client = new Client({ connectionString: process.env.NETLIFY_DATABASE_URL });
   await client.connect();

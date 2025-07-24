@@ -203,8 +203,6 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         </button>
     </div>
     
-
-    
     <div class="container">
         <form id="form-calc" onsubmit="return false;">
             <label for="gabinete-select">Painel:</label>
@@ -275,11 +273,9 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
         const installButton = document.getElementById('install-button');
         const iosBanner = document.getElementById('ios-install-banner');
 
-        // Detectar dispositivos
+        // Detectar iOS
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        
-
         
         // Desabilitar PWA se rodando localmente
         if (location.protocol === 'file:') {
