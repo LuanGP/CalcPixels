@@ -1,6 +1,19 @@
 const { Client } = require('pg');
 
 exports.handler = async function(event, context) {
+  // Suporte ao CORS preflight
+  if (event.method === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+      },
+      body: ''
+    };
+  }
+
   const client = new Client({ connectionString: process.env.NETLIFY_DATABASE_URL });
   await client.connect();
 
@@ -10,6 +23,12 @@ exports.handler = async function(event, context) {
 
   return {
     statusCode: 200,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
+    },
     body: JSON.stringify(res.rows[0])
   };
 }; 
