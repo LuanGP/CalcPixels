@@ -183,7 +183,7 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.4.0</span></h1>
+    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.4.5</span></h1>
     
     <!-- Botão de instalação -->
     <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
@@ -536,18 +536,20 @@ ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atuali
                 larguraRealM = (qtdLarg * gabineteLargM).toFixed(2);
                 alturaRealM = (qtdAlt * gabineteAltM).toFixed(2);
             }
-            // Calcular dimensões em polegadas (1 metro = 39.3701 polegadas)
-            let larguraPolegadas = '', alturaPolegadas = '';
+            // Calcular diagonal em polegadas (1 metro = 39.3701 polegadas)
+            let diagonalPolegadas = '';
             if (larguraRealM && alturaRealM) {
-                larguraPolegadas = (parseFloat(larguraRealM) * 39.3701).toFixed(2);
-                alturaPolegadas = (parseFloat(alturaRealM) * 39.3701).toFixed(2);
+                const larguraPolegadas = parseFloat(larguraRealM) * 39.3701;
+                const alturaPolegadas = parseFloat(alturaRealM) * 39.3701;
+                // Calcular diagonal usando teorema de Pitágoras
+                diagonalPolegadas = Math.sqrt(larguraPolegadas * larguraPolegadas + alturaPolegadas * alturaPolegadas).toFixed(1);
             }
             
             document.getElementById('resultado').innerHTML =
                 `Resolução total do painel: <b>${totalLarg} x ${totalAlt} pixels</b><br>` +
                 `Proporção: <b>${proporcaoLarg}:${proporcaoAlt}</b><br>` +
                 (larguraRealM && alturaRealM ? `Dimensão real em metros: <b>${larguraRealM}m x ${alturaRealM}m</b><br>` : '') +
-                (larguraPolegadas && alturaPolegadas ? `Dimensão real em polegadas: <b>${larguraPolegadas}" x ${alturaPolegadas}"</b><br>` : '') +
+                (diagonalPolegadas ? `Tamanho em polegadas: <b>${diagonalPolegadas}"</b><br>` : '') +
                 `Quantidade de gabinetes: <b>${qtdLarg * qtdAlt} (${qtdLarg}x${qtdAlt})</b><br>` +
                 `Pixels totais do projeto: <b>${totalPixels.toLocaleString('pt-BR')}</b><br>` +
                 `Portas na processadora: <b>${portasNecessarias}</b>`;
