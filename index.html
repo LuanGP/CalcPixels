@@ -1,594 +1,65 @@
-<!--
-ATENÇÃO: Sempre que fizer qualquer alteração no sistema, lembre-se de atualizar a versão exibida no topo da página (ex: v2.3.0)!
--->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Painel de LED</title>
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <link rel="manifest" href="manifest.json" id="manifest-link">
+    <title>CalcPixels – Sistema mudou</title>
     <meta name="theme-color" content="#1a237e">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="CalcPixels">
-    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231a237e'/><text x='96' y='120' font-size='120' text-anchor='middle' fill='white'>📱</text></svg>">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📱</text></svg>">
     <style>
+        * { box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #e9eafc 0%, #f5f7fa 100%);
             margin: 0;
-            padding: 0 3vw;
+            padding: 20px 3vw;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
-            min-height: 100vh;
+            justify-content: center;
+            color: #26326a;
+        }
+        .card {
+            background: #fff;
+            padding: 32px 40px;
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(26,35,126,0.10);
+            max-width: 420px;
+            width: 100%;
+            text-align: center;
         }
         h1 {
             color: #1a237e;
-            margin-top: 40px;
-            font-size: 2.4em;
-            letter-spacing: 2px;
+            font-size: 1.5em;
+            margin: 0 0 16px 0;
         }
-        .container {
-            background: #fff;
-            padding: 36px 44px 32px 44px;
-            border-radius: 18px;
-            box-shadow: 0 4px 24px rgba(26,35,126,0.10), 0 1.5px 6px rgba(26,35,126,0.07);
-            margin-top: 30px;
-            min-width: 340px;
-            max-width: 420px;
-            width: 100%;
+        p {
+            margin: 0 0 24px 0;
+            font-size: 1.05em;
+            line-height: 1.5;
         }
-        label {
-            display: block;
-            margin-top: 18px;
-            font-weight: 500;
-            color: #26326a;
-            font-size: 1.08em;
-        }
-        input[type="number"], select {
-            width: 100%;
-            padding: 10px 12px;
-            margin-top: 6px;
-            border: 1.5px solid #bfc6e0;
-            border-radius: 7px;
-            font-size: 1em;
-            background: #f7f8fc;
-            transition: border 0.2s, box-shadow 0.2s;
-        }
-        input[type="number"]:focus, select:focus {
-            border: 1.5px solid #1a237e;
-            outline: none;
-            box-shadow: 0 0 0 2px #e3e6fa;
-        }
-        input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
-            accent-color: #1a237e;
-        }
-        button {
-            margin-top: 28px;
-            padding: 12px 0;
+        a {
+            display: inline-block;
+            padding: 14px 28px;
             background: linear-gradient(90deg, #1a237e 60%, #3949ab 100%);
             color: #fff;
-            border: none;
-            border-radius: 7px;
-            font-size: 1.15em;
+            text-decoration: none;
             font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(26,35,126,0.08);
-            transition: background 0.2s, box-shadow 0.2s;
+            font-size: 1.05em;
+            border-radius: 8px;
+            transition: opacity 0.2s, box-shadow 0.2s;
         }
-        button:hover {
-            background: linear-gradient(90deg, #3949ab 60%, #1a237e 100%);
-            box-shadow: 0 4px 16px rgba(26,35,126,0.13);
-        }
-        .result-box {
-            margin-top: 32px;
-            background: #f7f8fc;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(26,35,126,0.07);
-            padding: 24px 20px 18px 20px;
-            color: #1a237e;
-            font-size: 1.18em;
-            font-weight: 500;
-            letter-spacing: 0.2px;
-        }
-        .result-box b {
-            color: #26326a;
-            font-weight: 700;
-        }
-        .input-row {
-            display: flex;
-            gap: 10px;
-            width: 100%;
-        }
-        .input-row input[type="number"] {
-            width: 48%;
-            min-width: 0;
-            display: inline-block;
-        }
-        @media (max-width: 600px) {
-            body {
-                padding: 0 3vw;
-            }
-            .container {
-                padding: 6px 2vw 8px 2vw;
-                min-width: unset;
-                max-width: 96vw;
-                width: 100%;
-                margin-top: 8px;
-                border-radius: 10px;
-                box-shadow: 0 2px 8px rgba(26,35,126,0.06);
-            }
-            h1 {
-                font-size: 1.08em !important;
-                margin-top: 10px !important;
-                margin-bottom: 6px !important;
-                letter-spacing: 1px;
-            }
-            label, .inline-label-select label {
-                font-size: 0.93em;
-            }
-            input[type="number"], select {
-                font-size: 0.93em;
-                padding: 6px 6px;
-                margin-top: 3px;
-                border-radius: 6px;
-            }
-            button {
-                font-size: 0.98em;
-                padding: 9px 0;
-                margin-top: 12px;
-                border-radius: 6px;
-            }
-            .result-box {
-                padding: 10px 4vw 10px 4vw;
-                font-size: 0.95em;
-                margin-top: 14px;
-                border-radius: 8px;
-                box-shadow: 0 1px 4px rgba(26,35,126,0.05);
-                margin-bottom: 10px;
-            }
-            .inline-label-select {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1px;
-                margin-top: 7px;
-            }
-            .input-row {
-                gap: 6px;
-            }
-            .input-row input[type="number"] {
-                width: 45%;
-                font-size: 0.93em;
-                padding: 6px 6px;
-            }
-            input[type="checkbox"] {
-                width: 16px;
-                height: 16px;
-            }
-        }
-        /* Alinhar label e select na mesma linha para 'Quantidade de:' */
-        .inline-label-select {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 18px;
-        }
-        .inline-label-select label {
-            margin: 0;
-            font-weight: 500;
-            color: #26326a;
-            font-size: 1.08em;
+        a:hover {
+            opacity: 0.95;
+            box-shadow: 0 4px 16px rgba(26,35,126,0.25);
         }
     </style>
 </head>
 <body>
-    <h1 style="font-size:2em;text-align:center;margin-bottom:10px;margin-top:22px;">CalcPixels <span id="versao-app" style="font-size:0.6em; color:#3949ab; font-weight:400;">v2.4.5</span></h1>
-    
-    <!-- Botão de instalação -->
-    <div id="install-container" style="display: none; text-align: center; margin-bottom: 15px;">
-        <button id="install-button" style="background: #4caf50; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 0.9em; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
-            📱 Instalar App
-        </button>
+    <div class="card">
+        <h1>CalcPixels</h1>
+        <p>O sistema mudou e agora está em um novo endereço.</p>
+        <p><a href="https://calcpixels.lsys.dev">Acessar calcpixels.lsys.dev →</a></p>
     </div>
-    
-    <!-- Banner para iOS -->
-    <div id="ios-install-banner" style="display: none; background: #1a237e; color: white; padding: 12px; margin: 0 20px 15px 20px; border-radius: 8px; text-align: center; font-size: 0.9em;">
-        <div style="margin-bottom: 8px;">📱 Para instalar no iPhone/iPad:</div>
-        <div style="font-size: 0.85em; opacity: 0.9;">
-            Toque no ícone <span style="font-weight: bold;">📤</span> e depois "Adicionar à Tela Inicial"
-        </div>
-        <button onclick="document.getElementById('ios-install-banner').style.display='none'" style="background: rgba(255,255,255,0.2); border: none; color: white; padding: 4px 8px; border-radius: 4px; margin-top: 8px; font-size: 0.8em; cursor: pointer;">
-            ✕ Fechar
-        </button>
-    </div>
-    
-    <div class="container">
-        <form id="form-calc" onsubmit="return false;">
-            <label for="gabinete-select">Painel:</label>
-            <select id="gabinete-select" onchange="toggleManualInputs()" required>
-                <!-- Opções serão populadas dinamicamente pelo JS -->
-            </select>
-            <div id="manual-inputs" style="display:none;">
-                <input type="number" id="pixels-largura" placeholder="Largura (px)" min="1">
-                <input type="number" id="pixels-altura" placeholder="Altura (px)" min="1">
-            </div>
-            <div class="inline-label-select" style="flex-direction:column; align-items:flex-start; gap:0; margin-top:18px;">
-                <label for="tipo-quantidade">Quantidade de:</label>
-                <select id="tipo-quantidade" onchange="toggleTipoQuantidade()" required style="margin-top:4px; width:100%;">
-                    <option value="gabinetes">Gabinetes:</option>
-                    <option value="metros">Metros:</option>
-                </select>
-            </div>
-            <div id="qtd-gabinetes">
-                <label for="qtd-largura">Quantidade de gabinetes:</label>
-                <div class="input-row">
-                    <input type="number" id="qtd-largura" placeholder="Largura (qtd)" min="1" required>
-                    <input type="number" id="qtd-altura" placeholder="Altura (qtd)" min="1" required>
-                </div>
-            </div>
-            <div id="qtd-metros" style="display:none;">
-                <label for="metros-largura">Dimensões em metros:</label>
-                <div class="input-row">
-                    <input type="number" id="metros-largura" placeholder="Largura (m)" min="0.01" step="0.01">
-                    <input type="number" id="metros-altura" placeholder="Altura (m)" min="0.01" step="0.01">
-                </div>
-            </div>
-            <div style="margin-top: 20px;">
-                <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; margin: 0;">
-                    <span style="font-weight: 500; color: #26326a; font-size: 1.08em;">Ignorar retângulo:</span>
-                    <input type="checkbox" id="ignorar-retangulo" style="width: 18px; height: 18px; cursor: pointer;">
-                </label>
-            </div>
-            <button type="submit" onclick="calcularPainel()">Calcular</button>
-        </form>
-        <div id="resultado" class="result-box"></div>
-    </div>
-    
-    <!-- Contadores -->
-    <div style="text-align: center; margin-top: 20px; padding: 15px; background: rgba(26,35,126,0.05); border-radius: 10px; max-width: 420px; width: 100%;">
-        <div style="font-size: 0.9em; color: #1a237e; margin-bottom: 10px; font-weight: 500;">📊 Estatísticas</div>
-        <div style="display: flex; justify-content: space-around; gap: 20px;">
-            <div>
-                <div style="font-size: 1.1em; font-weight: bold; color: #1a237e;" id="visits-counter">0</div>
-                <div style="font-size: 0.8em; color: #666;">Visitas</div>
-            </div>
-            <div>
-                <div style="font-size: 1.1em; font-weight: bold; color: #1a237e;" id="calculations-counter">0</div>
-                <div style="font-size: 0.8em; color: #666;">Cálculos</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Contato para feedback -->
-    <div style="text-align:center; margin: 32px 0 8px 0; font-size: 1em; color: #26326a;">
-        <span>Quer enviar um feedback ou ideia de melhoria do sistema? <br>Entre em contato:
-            <a href="https://wa.me/5548984456048" target="_blank" rel="noopener" style="color:#25d366; font-weight: bold; text-decoration: none;">WhatsApp</a>
-        </span>
-    </div>
-    <!-- Doações -->
-    <div style="text-align:center; margin-bottom: 24px; font-size: 1em; color: #26326a;">
-        <span style="display:block; font-weight:500; margin-bottom:4px;">Doações serão bem-vindas para contribuir com o projeto.</span>
-        <span style="display:block; font-size:1.08em; color:#1a237e; font-weight:bold; letter-spacing:1px;">Chave PIX: +5548984456048</span>
-    </div>
-
-    <script>
-        // PWA Installation
-        let deferredPrompt;
-        const installContainer = document.getElementById('install-container');
-        const installButton = document.getElementById('install-button');
-        const iosBanner = document.getElementById('ios-install-banner');
-
-        // Detectar iOS
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        
-        // Desabilitar PWA se rodando localmente
-        if (location.protocol === 'file:') {
-            const manifestLink = document.getElementById('manifest-link');
-            if (manifestLink) {
-                manifestLink.remove();
-            }
-            console.log('PWA desabilitada - rodando localmente via file://');
-        } else {
-            // Mostrar banner iOS se não estiver em modo standalone
-            if (isIOS && !isStandalone) {
-                iosBanner.style.display = 'block';
-            }
-            
-            // Forçar atualização em mobile
-            if (/Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                // Adicionar timestamp para quebrar cache
-                const links = document.querySelectorAll('link[rel="manifest"]');
-                links.forEach(link => {
-                    if (link.href) {
-                        link.href = link.href + '?v=' + Date.now();
-                    }
-                });
-                console.log('Mobile detectado - forçando atualização');
-            }
-        }
-
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installContainer.style.display = 'block';
-        });
-
-        installButton.addEventListener('click', async () => {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                const { outcome } = await deferredPrompt.userChoice;
-                if (outcome === 'accepted') {
-                    installContainer.style.display = 'none';
-                }
-                deferredPrompt = null;
-            }
-        });
-
-        window.addEventListener('appinstalled', () => {
-            installContainer.style.display = 'none';
-        });
-
-
-
-        // Tabela universal de gabinetes
-        const modelosGabinetes = [
-            { id: '192x192', label: 'P2.5 0.5x0.5 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-            { id: '168x168', label: 'P2.9 0.5x0.5 (168x168)', pixelsLargura: 168, pixelsAltura: 168, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-            { id: '256x256', label: 'P2.0 0.5x0.5 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P2.x' },
-            { id: '128x256', label: 'P3.9 0.5x1 (128x256)', pixelsLargura: 128, pixelsAltura: 256, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P3.9' },
-            { id: '128x128', label: 'P3.9 0.5x0.5 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.5, alturaRealM: 0.5, grupo: 'P3.9' },
-            { id: '128x128_P4', label: 'P4 0.512x0.512 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.512, alturaRealM: 0.512, grupo: 'P4' },
-            { id: '192x192_P4', label: 'P4 0.768x0.768 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.768, alturaRealM: 0.768, grupo: 'P4' },
-            { id: '256x256_P4', label: 'P4 1x1 (256x256)', pixelsLargura: 256, pixelsAltura: 256, larguraRealM: 1, alturaRealM: 1, grupo: 'P4' },
-            { id: '104x208_P4.81', label: 'P4.81 0.5x1 (104x208)', pixelsLargura: 104, pixelsAltura: 208, larguraRealM: 0.5, alturaRealM: 1, grupo: 'P4' },
-            { id: '192x192_P5', label: 'P5 0.96x0.96 (192x192)', pixelsLargura: 192, pixelsAltura: 192, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P5' },
-            { id: '128x128_P5', label: 'P5 0.64x0.64 (128x128)', pixelsLargura: 128, pixelsAltura: 128, larguraRealM: 0.64, alturaRealM: 0.64, grupo: 'P5' },
-            { id: '160x160', label: 'P6 0.96x0.96 (160x160)', pixelsLargura: 160, pixelsAltura: 160, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P6' },
-            { id: '96x96_P6', label: 'P6 0.576x0.576 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.576, alturaRealM: 0.576, grupo: 'P6' },
-            { id: '96x96', label: 'P10 0.96x0.96 (96x96)', pixelsLargura: 96, pixelsAltura: 96, larguraRealM: 0.96, alturaRealM: 0.96, grupo: 'P10' },
-            { id: 'manual', label: 'Manual', grupo: 'Manual' }
-        ];
-
-        // Função para popular o dropdown de gabinetes
-        function popularDropdownGabinetes() {
-            const select = document.getElementById('gabinete-select');
-            select.innerHTML = '';
-            // Agrupar por grupo e ordenar
-            const grupos = [...new Set(modelosGabinetes.map(m => m.grupo))].sort((a, b) => {
-                // Ordem customizada
-                const ordem = ['P2.x', 'P3.9', 'P4', 'P5', 'P6', 'P10', 'Manual'];
-                return ordem.indexOf(a) - ordem.indexOf(b);
-            });
-            grupos.forEach(grupo => {
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = grupo;
-                modelosGabinetes.filter(m => m.grupo === grupo).forEach(modelo => {
-                    const option = document.createElement('option');
-                    option.value = modelo.id;
-                    option.textContent = modelo.label;
-                    optgroup.appendChild(option);
-                });
-                select.appendChild(optgroup);
-            });
-        }
-        
-        // Chamar ao carregar
-        window.onload = function() {
-            popularDropdownGabinetes();
-        };
-
-        function toggleManualInputs() {
-            const gabinete = document.getElementById('gabinete-select').value;
-            const manualInputs = document.getElementById('manual-inputs');
-            if (gabinete === 'manual') {
-                manualInputs.style.display = 'block';
-                document.getElementById('pixels-largura').required = true;
-                document.getElementById('pixels-altura').required = true;
-            } else {
-                manualInputs.style.display = 'none';
-                document.getElementById('pixels-largura').required = false;
-                document.getElementById('pixels-altura').required = false;
-            }
-        }
-
-        function toggleTipoQuantidade() {
-            const tipo = document.getElementById('tipo-quantidade').value;
-            if (tipo === 'gabinetes') {
-                document.getElementById('qtd-gabinetes').style.display = 'block';
-                document.getElementById('qtd-metros').style.display = 'none';
-                document.getElementById('qtd-largura').required = true;
-                document.getElementById('qtd-altura').required = true;
-                document.getElementById('metros-largura').required = false;
-                document.getElementById('metros-altura').required = false;
-            } else {
-                document.getElementById('qtd-gabinetes').style.display = 'none';
-                document.getElementById('qtd-metros').style.display = 'block';
-                document.getElementById('qtd-largura').required = false;
-                document.getElementById('qtd-altura').required = false;
-                document.getElementById('metros-largura').required = true;
-                document.getElementById('metros-altura').required = true;
-            }
-        }
-
-        // Função para incrementar contador de visitas
-        async function incrementVisits() {
-            try {
-                const response = await fetch('/.netlify/functions/increment-visits', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    updateCounters(data.visits, data.calculations);
-                }
-            } catch (error) {
-                console.log('Erro ao incrementar visitas');
-            }
-        }
-
-        // Função para incrementar contador de cálculos
-        async function incrementCalculations() {
-            try {
-                const response = await fetch('/.netlify/functions/increment-calculations', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                });
-                if (response.ok) {
-                    const data = await response.json();
-                    updateCounters(data.visits, data.calculations);
-                }
-            } catch (error) {
-                console.log('Erro ao incrementar cálculos');
-            }
-        }
-
-        // Função para atualizar contadores na interface
-        function updateCounters(visits, calculations) {
-            const visitsElement = document.getElementById('visits-counter');
-            const calculationsElement = document.getElementById('calculations-counter');
-            
-            if (visitsElement) visitsElement.textContent = visits.toLocaleString('pt-BR');
-            if (calculationsElement) calculationsElement.textContent = calculations.toLocaleString('pt-BR');
-        }
-
-        // Carregar contadores ao iniciar
-        async function loadCounters() {
-            try {
-                const response = await fetch('/.netlify/functions/get-counters');
-                if (response.ok) {
-                    const data = await response.json();
-                    updateCounters(data.visits, data.calculations);
-                }
-            } catch (error) {
-                console.log('Erro ao carregar contadores');
-            }
-        }
-
-        // Incrementar visitas ao carregar a página
-        window.addEventListener('load', () => {
-            incrementVisits();
-        });
-
-        function calcularPainel() {
-            const gabineteId = document.getElementById('gabinete-select').value;
-            const gabineteModelo = modelosGabinetes.find(m => m.id === gabineteId);
-            let pxLarg, pxAlt, gabineteLargM, gabineteAltM;
-            if (gabineteId === 'manual') {
-                pxLarg = parseInt(document.getElementById('pixels-largura').value, 10);
-                pxAlt = parseInt(document.getElementById('pixels-altura').value, 10);
-                gabineteLargM = null;
-                gabineteAltM = null;
-            } else {
-                pxLarg = gabineteModelo.pixelsLargura;
-                pxAlt = gabineteModelo.pixelsAltura;
-                gabineteLargM = gabineteModelo.larguraRealM;
-                gabineteAltM = gabineteModelo.alturaRealM;
-            }
-            let qtdLarg, qtdAlt;
-            const tipo = document.getElementById('tipo-quantidade').value;
-            if (tipo === 'gabinetes') {
-                qtdLarg = parseInt(document.getElementById('qtd-largura').value, 10);
-                qtdAlt = parseInt(document.getElementById('qtd-altura').value, 10);
-            } else {
-                if (gabineteId === 'manual' || !gabineteLargM || !gabineteAltM) {
-                    document.getElementById('resultado').textContent = 'Para cálculo por metros, selecione um gabinete pré-definido.';
-                    return;
-                }
-                const metrosLarg = parseFloat(document.getElementById('metros-largura').value);
-                const metrosAlt = parseFloat(document.getElementById('metros-altura').value);
-                // Floor
-                const qtdLarg_floor = Math.floor(metrosLarg / gabineteLargM);
-                const qtdAlt_floor = Math.floor(metrosAlt / gabineteAltM);
-                const largReal_floor = qtdLarg_floor * gabineteLargM;
-                const altReal_floor = qtdAlt_floor * gabineteAltM;
-                const diff_floor = Math.abs(metrosLarg - largReal_floor) + Math.abs(metrosAlt - altReal_floor);
-                // Ceil
-                const qtdLarg_ceil = Math.ceil(metrosLarg / gabineteLargM);
-                const qtdAlt_ceil = Math.ceil(metrosAlt / gabineteAltM);
-                const largReal_ceil = qtdLarg_ceil * gabineteLargM;
-                const altReal_ceil = qtdAlt_ceil * gabineteAltM;
-                const diff_ceil = Math.abs(metrosLarg - largReal_ceil) + Math.abs(metrosAlt - altReal_ceil);
-                // Escolher o mais próximo
-                if (diff_floor <= diff_ceil) {
-                    qtdLarg = qtdLarg_floor;
-                    qtdAlt = qtdAlt_floor;
-                } else {
-                    qtdLarg = qtdLarg_ceil;
-                    qtdAlt = qtdAlt_ceil;
-                }
-            }
-            if (isNaN(pxLarg) || isNaN(pxAlt) || isNaN(qtdLarg) || isNaN(qtdAlt)) {
-                document.getElementById('resultado').textContent = 'Por favor, preencha todos os campos corretamente.';
-                return;
-            }
-            const totalLarg = pxLarg * qtdLarg;
-            const totalAlt = pxAlt * qtdAlt;
-            const totalPixels = totalLarg * totalAlt;
-            const pixelsPorPorta = 650000;
-            
-            // Verificar se deve ignorar retangulo
-            const ignorarRetangulo = document.getElementById('ignorar-retangulo').checked;
-            let portasNecessarias;
-            
-            if (ignorarRetangulo) {
-                // Quando ignorar retangulo, calcular portas baseado na maior dimensão linear
-                // Cada porta suporta aproximadamente sqrt(650000) ≈ 806 pixels lineares
-                const pixelsLinearesPorPorta = Math.sqrt(pixelsPorPorta);
-                const portasLargura = Math.ceil(totalLarg / pixelsLinearesPorPorta);
-                const portasAltura = Math.ceil(totalAlt / pixelsLinearesPorPorta);
-                portasNecessarias = Math.max(portasLargura, portasAltura);
-            } else {
-                // Cálculo padrão baseado na área total (retângulo)
-                portasNecessarias = Math.ceil(totalPixels / pixelsPorPorta);
-            }
-            function mdc(a, b) {
-                return b === 0 ? a : mdc(b, a % b);
-            }
-            const divisor = mdc(totalLarg, totalAlt);
-            const proporcaoLarg = totalLarg / divisor;
-            const proporcaoAlt = totalAlt / divisor;
-            let larguraRealM = '', alturaRealM = '';
-            if (gabineteLargM && gabineteAltM) {
-                larguraRealM = (qtdLarg * gabineteLargM).toFixed(2);
-                alturaRealM = (qtdAlt * gabineteAltM).toFixed(2);
-            }
-            // Calcular diagonal em polegadas (1 metro = 39.3701 polegadas)
-            let diagonalPolegadas = '';
-            if (larguraRealM && alturaRealM) {
-                const larguraPolegadas = parseFloat(larguraRealM) * 39.3701;
-                const alturaPolegadas = parseFloat(alturaRealM) * 39.3701;
-                // Calcular diagonal usando teorema de Pitágoras
-                diagonalPolegadas = Math.sqrt(larguraPolegadas * larguraPolegadas + alturaPolegadas * alturaPolegadas).toFixed(1);
-            }
-            
-            document.getElementById('resultado').innerHTML =
-                `Resolução total do painel: <b>${totalLarg} x ${totalAlt} pixels</b><br>` +
-                `Proporção: <b>${proporcaoLarg}:${proporcaoAlt}</b><br>` +
-                (larguraRealM && alturaRealM ? `Dimensão real em metros: <b>${larguraRealM}m x ${alturaRealM}m</b><br>` : '') +
-                (diagonalPolegadas ? `Tamanho em polegadas: <b>${diagonalPolegadas}"</b><br>` : '') +
-                `Quantidade de gabinetes: <b>${qtdLarg * qtdAlt} (${qtdLarg}x${qtdAlt})</b><br>` +
-                `Pixels totais do projeto: <b>${totalPixels.toLocaleString('pt-BR')}</b><br>` +
-                `Portas na processadora: <b>${portasNecessarias}</b>`;
-            
-            // Incrementar contador de cálculos
-            incrementCalculations();
-        }
-    </script>
 </body>
-</html> 
+</html>
